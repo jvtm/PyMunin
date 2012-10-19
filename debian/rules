@@ -1,0 +1,6 @@
+#!/usr/bin/make -f
+
+DEB_PYTHON2_MODULE_PACKAGES=python-pymunin
+
+%:
+	dh $@ --with python2

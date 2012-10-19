@@ -1,0 +1,15 @@
+Source: pymunin
+Section: python
+Priority: optional
+Maintainer: Jyrki Muukkonen <jvtm@kruu.org>
+Build-Depends: debhelper (>= 8), python (>= 2.6.6-3~), python-setuptools
+X-Python-Version: >= 2.6
+Standards-Version: 3.9.1
+
+Package: python-pymunin
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, python-pkg-resources
+Description: Python Module for developing Munin Multigraph Monitoring Plugins
+ More detailed documentation for the project and sample graphs for plugins are
+ published in the PyMunin Project Web Page: http://aouyar.github.com/PyMunin/
+
