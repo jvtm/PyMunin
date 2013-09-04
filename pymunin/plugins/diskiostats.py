@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """diskiostats - Munin Plugin to monitor Disk I/O.
 
+
 Requirements - NA
 
 
@@ -8,6 +9,7 @@ Wild Card Plugin - No
 
 
 Multigraph Plugin - Graph Structure
+
     - diskio_disk_requests
     - diskio_disk_bytes
     - diskio_disk_active
@@ -26,6 +28,7 @@ Multigraph Plugin - Graph Structure
 
    
 Environment Variables
+
   include_graphs:  Comma separated list of enabled graphs. 
                    (All graphs enabled by default.)
   exclude_graphs:  Comma separated list of disabled graphs.
@@ -50,7 +53,7 @@ __author__ = "Ali Onur Uyar"
 __copyright__ = "Copyright 2011, Ali Onur Uyar"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "0.7"
+__version__ = "0.9.27"
 __maintainer__ = "Ali Onur Uyar"
 __email__ = "aouyar at gmail.com"
 __status__ = "Development"
@@ -103,10 +106,9 @@ class MuninDiskIOplugin(MuninPlugin):
         else:
             self._partList = None
             
-        devlist = self._info.getLVlist()
-        if devlist:
-            devlist.sort()
-            self._lvList = ["-".join(x) for x in devlist]
+        self._lvList = self._info.getLVnameList()
+        if self._lvList:
+            self._lvList.sort()
             self._configDevRequests('lv', 'LV', self._lvList)
             self._configDevBytes('lv', 'LV', self._lvList)
             self._configDevActive('lv', 'LV', self._lvList)

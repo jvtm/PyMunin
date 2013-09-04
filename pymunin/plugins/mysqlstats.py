@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 """mysqlstats - Munin Plugin to monitor stats for MySQL Database Server.
 
+
 Requirements
+
   - Access permissions for MySQL Database.
 
 
@@ -9,6 +11,7 @@ Wild Card Plugin - No
 
 
 Multigraph Plugin - Graph Structure
+
     - mysql_connections
     - mysql_traffic
     - mysql_slowqueries
@@ -47,6 +50,7 @@ Environment Variables
   exclude_graphs: Comma separated list of disabled graphs.
 
 Environment Variables for Multiple Instances of Plugin (Omitted by default.)
+
   instance_name:         Name of instance.
   instance_label:        Graph title label for instance.
                          (Default is the same as instance name.)
@@ -307,7 +311,7 @@ class MuninMySQLplugin(MuninPlugin):
             graph = MuninGraph('MySQL - Query Cache - Memory Use (bytes)', 
                 self._category,
                 info='Memory utilization for MySQL Server Query Cache.',
-                args='--base 1000 --lower-limit 0')
+                args='--base 1024 --lower-limit 0')
             graph.addField('used', 'used', draw='AREASTACK', type='GAUGE', 
                 info="Used space (bytes) in Query Cache.")
             graph.addField('free', 'free', draw='AREASTACK', type='GAUGE', 

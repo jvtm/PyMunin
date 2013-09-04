@@ -4,12 +4,14 @@ CPU, memory, processes, forks, interrupts, context switches, paging,
 swapping, etc.
 
 Requirements
+
   - NA.
 
 Wild Card Plugin - No
 
 
 Multigraph Plugin - Graph Structure
+
     - sys_loadavg
     - sys_cpu_util
     - sys_memory_util
@@ -107,7 +109,7 @@ class MuninSysStatsPlugin(MuninPlugin):
                                           - self._memstats['SwapFree'])
             graph = MuninGraph('Memory Utilization (bytes)', self._category,
                 info='System Memory Utilization in bytes.',
-                args='--base 1000 --lower-limit 0')
+                args='--base 1024 --lower-limit 0')
             for field in ['MemUsed', 'SwapCached', 'Buffers', 'Cached', 
                           'MemFree', 'SwapUsed']:
                 if self._memstats.has_key(field):
@@ -127,7 +129,7 @@ class MuninSysStatsPlugin(MuninPlugin):
             graph = MuninGraph('Memory Utilization - Active/Inactive (bytes)', 
                 self._category,
                 info='System Memory Utilization (Active/Inactive) in bytes.',
-                args='--base 1000 --lower-limit 0')
+                args='--base 1024 --lower-limit 0')
             for field in ['MemKernel', 'MemHugePages', 'Active', 'Inactive', 
                           'MemFree']:
                 if self._memstats.has_key(field):
@@ -142,7 +144,7 @@ class MuninSysStatsPlugin(MuninPlugin):
                 graph = MuninGraph('Memory Utilization - Huge Pages (bytes)', 
                     self._category,
                     info='System Memory Huge Pages Utilization in bytes.',
-                    args='--base 1000 --lower-limit 0')
+                    args='--base 1024 --lower-limit 0')
                 for field in ['Rsvd', 'Surp', 'Free']:
                     fkey = 'HugePages_' + field
                     if self._memstats.has_key(fkey):

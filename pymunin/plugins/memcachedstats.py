@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """memcachedstats - Munin Plugin to monitor stats for Memcached Server.
 
+
 Requirements
 
 
@@ -8,6 +9,7 @@ Wild Card Plugin - No
 
 
 Multigraph Plugin - Graph Structure
+
     - memcached_connections
     - memcached_items
     - memcached_memory
@@ -27,11 +29,15 @@ Environment Variables
 
   host:           Memcached Server IP. (127.0.0.1 by default.)
   port:           Memcached Server Port (11211 by default.)
+  socket_file:    Memcached named socket file.
+                  (The host and port arguments are ignored and UNIX socket is 
+                  used for connecting to the server.)
   include_graphs: Comma separated list of enabled graphs.
                   (All graphs enabled by default.)
   exclude_graphs: Comma separated list of disabled graphs.
 
 Environment Variables for Multiple Instances of Plugin (Omitted by default.)
+
   instance_name:         Name of instance.
   instance_label:        Graph title label for instance.
                          (Default is the same as instance name.)
@@ -68,7 +74,7 @@ class MuninMemcachedPlugin(MuninPlugin):
     """Multigraph Munin Plugin for monitoring Memcached Server.
 
     """
-    plugin_name = 'memcached'
+    plugin_name = 'memcachedstats'
     isMultigraph = True
     isMultiInstance = True
 
@@ -84,12 +90,14 @@ class MuninMemcachedPlugin(MuninPlugin):
         
         self._host = self.envGet('host')
         self._port = self.envGet('port', None, int)
+        self._socket_file = self.envGet('socket_file', None)
         self._category = 'Memcached'
         
         self._stats = None
         self._prev_stats = self.restoreState()
         if self._prev_stats is None:
-            serverInfo = MemcachedInfo(self._host,  self._port)
+            serverInfo = MemcachedInfo(self._host,  self._port, 
+                                       self._socket_file)
             self._stats = serverInfo.getStats()
             stats = self._stats
         else:
@@ -266,7 +274,7 @@ class MuninMemcachedPlugin(MuninPlugin):
             
         if (self.graphEnabled('memcached_statauth')
             and stats.has_key('auth_cmds')):
-            graph = MuninGraph('Memcached - Stats - Autentication', 
+            graph = MuninGraph('Memcached - Stats - Authentication', 
                 self._category,
                 info='Autentication requests per second.',
                 vlabel='reqs / sec', args='--base 1000 --lower-limit 0')
@@ -297,7 +305,7 @@ class MuninMemcachedPlugin(MuninPlugin):
     def retrieveVals(self):
         """Retrieve values for graphs."""
         if self._stats is None:
-            serverInfo = MemcachedInfo(self._host,  self._port)
+            serverInfo = MemcachedInfo(self._host,  self._port, self._socket_file)
             stats = serverInfo.getStats()
         else:
             stats = self._stats
@@ -416,7 +424,6 @@ class MuninMemcachedPlugin(MuninPlugin):
                     ('incr',  'incr_hits',  'incr_misses'), 
                     ('decr',  'decr_hits',  'decr_misses')
                 ):
-                val = float(100)
                 if prev_stats:
                     if (stats.has_key(field_hits) 
                         and prev_stats.has_key(field_hits)
@@ -427,6 +434,8 @@ class MuninMemcachedPlugin(MuninPlugin):
                         total = hits + misses
                         if total > 0:
                             val = 100.0 * hits / total
+                        else:
+                            val = 0
                         self.setGraphVal('memcached_hitpct',  field_name, 
                                          round(val,  2))
                         
@@ -436,7 +445,7 @@ class MuninMemcachedPlugin(MuninPlugin):
         @return: True if plugin can be  auto-configured, False otherwise.
                  
         """
-        serverInfo = MemcachedInfo(self._host,  self._port)
+        serverInfo = MemcachedInfo(self._host,  self._port, self._socket_file)
         return (serverInfo is not None)
 
 

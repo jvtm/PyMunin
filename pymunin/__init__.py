@@ -13,9 +13,10 @@ import cPickle as pickle
 
 __author__ = "Ali Onur Uyar"
 __copyright__ = "Copyright 2011, Ali Onur Uyar"
-__credits__ = ["Samuel Stauffer"]
+__credits__ = ["Samuel Stauffer (https://github.com/samuel)",
+               "Mark Lavin (https://github.com/mlavin)"]
 __license__ = "GPL"
-__version__ = "0.9.20"
+__version__ = "0.9.28"
 __maintainer__ = "Ali Onur Uyar"
 __email__ = "aouyar at gmail.com"
 __status__ = "Development"
@@ -121,6 +122,7 @@ class MuninPlugin:
         self._dirtyConfig = False
         self._instanceName = None
         self._instanceLabel = None
+        self._nestedGraphs = False
         if (self.plugin_name is not None and argv is not None and len(argv) > 0 
             and re.search('_$', self.plugin_name)):
             mobj = re.match("%s(\S+)$" % self.plugin_name, 
@@ -177,7 +179,7 @@ class MuninPlugin:
         """
         graph = self._graphDict.get(graph_name)
         if fail_noexist and graph is None:
-            raise AttributeError("Invalid graph name %s", graph_name)
+            raise AttributeError("Invalid graph name: %s" % graph_name)
         else:
             return graph
             
@@ -199,8 +201,8 @@ class MuninPlugin:
                 subgraph = subgraphs.get(graph_name)
                 if fail_noexist and subgraph is None:
                     raise AttributeError("Invalid subgraph name %s"
-                                         "for graph %s.", 
-                                         (graph_name, parent_name))
+                                         "for graph %s."
+                                         % (graph_name, parent_name))
                 else:
                     return subgraph
             else:
@@ -530,8 +532,7 @@ class MuninPlugin:
         if graph.hasField(field_name):
             graph.setVal(field_name, val)
         else:
-            raise AttributeError("Invalid field name %s "
-                                 "for graph %s." 
+            raise AttributeError("Invalid field name %s for graph %s." 
                                  % (field_name, graph_name))
     
     def setSubgraphVal(self,  parent_name,  graph_name, field_name, val):
@@ -550,8 +551,7 @@ class MuninPlugin:
         if subgraph.hasField(field_name):
             subgraph.setVal(field_name, val)
         else:
-            raise AttributeError("Invalid field name %s "
-                                 "for subgraph %s "
+            raise AttributeError("Invalid field name %s for subgraph %s "
                                  "of parent graph %s." 
                                  % (field_name, graph_name, parent_name))
     
@@ -583,20 +583,37 @@ class MuninPlugin:
         """
         return self._graphNames
     
+    def getGraphCount(self):
+        """Returns number of graphs registered to plugin.
+        
+        @return - Number of graphs.
+        
+        """
+        return len(self._graphNames)
+    
     def getSubgraphList(self, parent_name):
         """Returns list of names of subgraphs for Root Graph with name parent_name.
         
         @param parent_name: Name of Root Graph.
-        @return -           List of subgraph names.
+        @return:            List of subgraph names.
         
         """
         if not self.isMultigraph:
             raise AttributeError("Simple Munin Plugins cannot have subgraphs.")
         if self._graphDict.has_key(parent_name):
-            return self._subgraphNames.get(parent_name) or []
+            return self._subgraphNames[parent_name] or []
         else:
             raise AttributeError("Invalid parent graph name %s."
                                  % (parent_name,))
+            
+    def getSubgraphCount(self, parent_name):
+        """Returns number of subgraphs for Root Graph with name parent_name.
+        
+        @param parent_name: Name of Root Graph.
+        @return:            Number of subgraphs.
+        
+        """
+        return len(self.getSubgraphList(parent_name))
 
     def graphHasField(self, graph_name, field_name):
         """Return true if graph with name graph_name has field with 
@@ -633,8 +650,19 @@ class MuninPlugin:
         graph = self._getGraph(graph_name, True)
         return graph.getFieldList()
     
+    def getGraphFieldCount(self, graph_name):
+        """Returns number of fields for graph with name graph_name.
+        
+        @param graph_name: Graph Name
+        @return:           Number of fields for graph.
+        
+        """
+        graph = self._getGraph(graph_name, True)
+        return graph.getFieldCount()
+    
     def getSubgraphFieldList(self, parent_name, graph_name):
-        """Returns list of names of fields for graph with name graph_name.
+        """Returns list of names of fields for subgraph with name graph_name
+        and parent graph with name parent_name.
         
         @param parent_name: Root Graph Name
         @param graph_name:  Subgraph Name
@@ -643,6 +671,18 @@ class MuninPlugin:
         """
         graph = self._getSubGraph(parent_name, graph_name, True)
         return graph.getFieldList()
+    
+    def getSubgraphFieldCount(self, parent_name, graph_name):
+        """Returns number of fields for subgraph with name graph_name and parent 
+        graph with name parent_name.
+        
+        @param parent_name: Root Graph Name
+        @param graph_name:  Subgraph Name
+        @return:            Number of fields for subgraph.
+        
+        """
+        graph = self._getSubGraph(parent_name, graph_name, True)
+        return graph.getFieldCount()
         
     def retrieveVals(self):
         """Initialize measured values for Graphs.
@@ -681,7 +721,8 @@ class MuninPlugin:
                 print "multigraph %s" % self._getMultigraphID(parent_name)
             print self._formatConfig(graph.getConfig())
             print
-        if self._nestedGraphs and self._subgraphDict and self._subgraphNames:
+        if (self.isMultigraph and self._nestedGraphs 
+            and self._subgraphDict and self._subgraphNames):
             for (parent_name, subgraph_names) in self._subgraphNames.iteritems():
                 for graph_name in subgraph_names:
                     graph = self._subgraphDict[parent_name][graph_name]
@@ -713,7 +754,8 @@ class MuninPlugin:
                 print "multigraph %s" % self._getMultigraphID(parent_name)
             print self._formatVals(graph.getVals())
             print
-        if self._nestedGraphs and self._subgraphDict and self._subgraphNames:
+        if (self.isMultigraph and self._nestedGraphs 
+            and self._subgraphDict and self._subgraphNames):
             for (parent_name, subgraph_names) in self._subgraphNames.iteritems():
                 for graph_name in subgraph_names:
                     graph = self._subgraphDict[parent_name][graph_name]
@@ -756,7 +798,7 @@ class MuninGraph:
 
     def __init__(self, title, category = None, vlabel=None, info=None, 
                  args =None, period=None, scale=None,  total=None, order=None, 
-                 printf=None, witdh=None, height=None,
+                 printf=None, width=None, height=None,
                  autoFixNames = False):
         """Initialize Munin Graph.
         
@@ -845,6 +887,14 @@ class MuninGraph:
         """
         return self._fieldNameList
     
+    def getFieldCount(self):
+        """Returns the number of fields for Munin Graph.
+        
+        @return: Number of fields.
+        
+        """
+        return len(self._fieldNameList)
+    
     def getConfig(self):
         """Returns dictionary of config entries for Munin Graph.
         
@@ -910,8 +960,8 @@ def muninMain(pluginClass, argv=None, env=None, debug=False):
             return 0
         else:
             return 1
-    except Exception, e:
-        print >> sys.stderr, "EXCEPTION: %s" % str(e)
+    except Exception:
+        print >> sys.stderr, "ERROR: %s" % repr(sys.exc_info()[1])
         if autoconf:
             print "no"
         if debug:

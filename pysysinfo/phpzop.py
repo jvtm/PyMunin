@@ -1,19 +1,20 @@
-"""Implements APCinfo Class for gathering stats from Alternative PHP Accelerator.
+"""Implements ZOPinfo Class for gathering stats from Zend Optimizor +.
 
-The statistics are obtained through a request to custom apcinfo.php script
+The statistics are obtained through a request to custom zopinfo.php script
 that must be placed in the Web Server Document Root Directory.
 
 """
 
 import util
+import json
 
-__author__ = "Ali Onur Uyar"
+__author__ = "Preston M."
 __copyright__ = "Copyright 2011, Ali Onur Uyar"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "0.9.23"
-__maintainer__ = "Ali Onur Uyar"
-__email__ = "aouyar at gmail.com"
+__version__ = "0.9.24"
+__maintainer__ = "Preston M."
+__email__ = "pentie at gmail.com"
 __status__ = "Development"
 
 
@@ -21,7 +22,7 @@ defaultHTTPport = 80
 defaultHTTPSport = 443
 
 
-class APCinfo:
+class ZOPinfo:
     """Class to retrieve stats from APC from Web Server."""
 
     def __init__(self, host=None, port=None, user=None, password=None,
@@ -62,7 +63,7 @@ class APCinfo:
         if monpath:
             self._monpath = monpath
         else:
-            self._monpath = 'apcinfo.php'
+            self._monpath = 'zopinfo.php'
         self._extras = extras
         self._statusDict = None
         if autoInit:
@@ -75,46 +76,12 @@ class APCinfo:
                        expensive.
         
         """
-        if extras is not None:
-            self._extras = extras
-        if self._extras:
-            detail = 1
-        else:
-            detail = 0
-        url = "%s://%s:%d/%s?detail=%s" % (self._proto, self._host, self._port, 
-                                           self._monpath, detail)
+        url = "%s://%s:%d/%s" % (self._proto, self._host, self._port, self._monpath)
         response = util.get_url(url, self._user, self._password)
-        self._statusDict = {}
-        for line in response.splitlines():
-            cols = line.split(':')
-            if not self._statusDict.has_key(cols[0]):
-                self._statusDict[cols[0]] = {}
-            self._statusDict[cols[0]][cols[1]] = util.parse_value(cols[2])
+        #with open('/tmp/zopinfo.json') as f:
+        #    response = f.read()
+        self._statusDict = json.loads(response)
     
-    def getMemoryStats(self):
-        """Return Memory Utilization Stats for APC.
-        
-        @return: Dictionary of stats.
-        
-        """
-        return self._statusDict.get('memory');
-    
-    def getSysCacheStats(self):
-        """Return System Cache Stats for APC.
-        
-        @return: Dictionary of stats.
-        
-        """
-        return self._statusDict.get('cache_sys');
-    
-    def getUserCacheStats(self):
-        """Return User Cache Stats for APC.
-        
-        @return: Dictionary of stats.
-        
-        """
-        return self._statusDict.get('cache_user');
-
     def getAllStats(self):
         """Return All Stats for APC.
         

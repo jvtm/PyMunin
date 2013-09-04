@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 """asteriskstats - Munin Plugin to monitor Asterisk through Manager Interface.
 
+
 Requirements
+
   - Access to Asterisk Manager Interface
 
 Wild Card Plugin - No
 
 Multigraph Plugin - Graph Structure
+
    - asterisk_calls
    - asterisk_channels
    - asterisk_peers_sip
@@ -24,6 +27,7 @@ Multigraph Plugin - Graph Structure
 
 
 Environment Variables
+
   amihost:        IP of Asterisk Server. (Default: 127.0.0.1)
   amiport:        Asterisk Manager Interface Port. (Default: 5038)
   amiuser:        Asterisk Manager Interface User.
@@ -48,6 +52,7 @@ Environment Variables
   Note: Channel, codec and trunk expressions are case insensitive.
   
 Environment Variables for Multiple Instances of Plugin (Omitted by default.)
+
   instance_name:         Name of instance.
   instance_label:        Graph title label for instance.
                          (Default is the same as instance name.)
@@ -77,7 +82,7 @@ from pysysinfo.asterisk import AsteriskInfo
 
 __author__ = "Ali Onur Uyar"
 __copyright__ = "Copyright 2011, Ali Onur Uyar"
-__credits__ = []
+__credits__ = ["Santiago Rojo (https://github.com/arpagon)",]
 __license__ = "GPL"
 __version__ = "0.9.20"
 __maintainer__ = "Ali Onur Uyar"
@@ -391,17 +396,17 @@ class MuninAsteriskPlugin(MuninPlugin):
                     total_answer += stats.get('calls_completed')
                 if self.hasGraph('asterisk_queue_abandon_pcent'):
                     prev_stats = self._queues_prev.get(queue)
-                    val = 0
                     if prev_stats is not None:
                         abandon = (stats.get('calls_abandoned', 0) -
                                    prev_stats.get('calls_abandoned', 0))
                         answer = (stats.get('calls_completed', 0) -
                                   prev_stats.get('calls_completed', 0))
-                        if answer >= 0 and abandon >= 0:
-                            total = abandon + answer
-                            if total > 0:
-                                val = 100.0 * float(abandon) / float(total)
-                    self.setGraphVal('asterisk_queue_abandon_pcent', 
+                        total = abandon + answer    
+                        if total > 0:
+                            val = 100.0 * float(abandon) / float(total)
+                        else:
+                            val = 0
+                        self.setGraphVal('asterisk_queue_abandon_pcent', 
                                      queue, val)
             if self.hasGraph('asterisk_queue_calls'):
                     self.setGraphVal('asterisk_queue_calls', 'abandon', 

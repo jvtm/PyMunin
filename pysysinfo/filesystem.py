@@ -8,7 +8,7 @@ __author__ = "Ali Onur Uyar"
 __copyright__ = "Copyright 2011, Ali Onur Uyar"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "0.9"
+__version__ = "0.9.23"
 __maintainer__ = "Ali Onur Uyar"
 __email__ = "aouyar at gmail.com"
 __status__ = "Development"
@@ -107,11 +107,16 @@ class FilesystemInfo:
             for line in lines[1:]:
                 fsstats = {}
                 cols = line.split()
-                fsstats['device'] = cols[0]
-                fsstats['type'] = self._fstypeDict[cols[5]]
-                fsstats['total'] = int(cols[1])
-                fsstats['inuse'] = int(cols[2])
-                fsstats['avail'] = int(cols[3])
-                fsstats['inuse_pcent'] = int(cols[4][:-1])
-                stats[cols[5]] = fsstats
+                try:
+                    pcent = int(cols[4][:-1])
+                except:
+                    pcent = None
+                if pcent is not None: 
+                    fsstats['device'] = cols[0]
+                    fsstats['type'] = self._fstypeDict[cols[5]]
+                    fsstats['total'] = int(cols[1])
+                    fsstats['inuse'] = int(cols[2])
+                    fsstats['avail'] = int(cols[3])
+                    fsstats['inuse_pcent'] = pcent
+                    stats[cols[5]] = fsstats
         return stats

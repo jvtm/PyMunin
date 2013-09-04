@@ -8,7 +8,7 @@ About
 Python Module for developing Munin Multigraph Monitoring Plugins.
 
 More detailed documentation for the project and sample graphs for plugins are 
-published in the [PyMunin Project Web Page](http://aouyar.github.com/PyMunin/)
+published in the [PyMunin Project Web Page](http://aouyar.github.com/PyMunin/).
 
 Regular Munin Plugins employ one-plugin one-graph logic and require the 
 execution of a script for data retrieval for each graph.
@@ -64,6 +64,7 @@ included:
 * PostgreSQL Database
 * Processes and Threads
 * Rackspace Cloud
+* Redis Server
 * System Resources 
   (Load, CPU, Memory, Processes, Interrupts, Paging, Swapping, etc.)
 * Sangoma Wanpipe Telephony Interfaces
@@ -76,13 +77,6 @@ yet for the following:
 * Squid Web Proxy
 
 
-Documentation
--------------
-
-The documentation for the project and sample graphs for plugins will be 
-published in the [PyMunin Project Web Page](http://aouyar.github.com/PyMunin/).
-
-
 Licensing
 ---------
 
@@ -92,55 +86,42 @@ _GPL License Version 3_ or later.
 See the _COPYING_ file that acompanies the code for full licensing information.
 
 
-Credits
--------
+Download
+--------
 
-_PyMunin_ has been developed 
-by [aouyar](https://github.com/aouyar) (Ali Onur Uyar).
+New versions of the code are be published for download 
+at [PyPI - the Python Package Index](http://pypi.python.org/pypi/PyMunin) 
+periodically.
 
-Some of the people that have knowingly or unknowingly contributed with the 
-development are:
+You can download the latest development version of this code that is hosted 
+at [GitHub](https://github.com/{{ site.user }}/{{ page.prjname }}) either
+in [ZIP](https://github.com/aouyar/PyMunin/zipball/master)
+or [TAR](https://github.com/aouyar/PyMunin/tarball/master) 
+format.
 
-* Initial packaging of the code was done 
-by [mlavin](https://github.com/mlavin) (Mark Lavin).
-PyMunin is installable pip / easy_install thanks to Mark. :-)  
-* The initial design of the solution was inspired by 
-[python-munin](https://github.com/samuel/python-munin) 
-by [samuel](https://github.com/samuel) (Samuel Stauffer).
-* Many plugins were inspired by existing _Munin Plugins_developed by other 
-people. (Before developing any plugins, I always try to check existing 
-solutions.)
+You can also get the latest development version of the code by cloning  
+the [Git](http://git-scm.com) repository for the project by running:
 
-I hope that more people will be using PyMunin for developing plugins in the 
-future.
+	git clone git://github.com/aouyar/PyMunin
 
 
 Installation
 ------------
 
-The easiest way to install the code is to use [pip](http://www.pip-installer.org/):
+The easiest way to install the code is to use [pip](http://www.pip-installer.org/).
 
-* Install the newest version from [PyPI](http://pypi.python.org):
+Install the newest version from [PyPI](http://pypi.python.org/pypi/PyMunin):
+
 	pip install PyMunin
-* Install the latest development versión:
+	
+Install the latest development version:
+
 	pip install git+https://github.com/aouyar/PyMunin.git#egg=PyMunin
+	
+The other option is to download and uncompress the code manually and execute the 
+included _setup.py_ script for installation:
 
-The other option is to download and uncompress the code and execute the included
-_setup.py_ script for installation:
 	./setup.py install
-
-For detailed instructions on the installation process please check the 
-project documentation at
- [PyMunin Project Web Page](http://aouyar.github.com/PyMunin/).
-
-
-Troubleshooting
----------------
-
-On error plugins return short error messages by default. Plugin debugging must
-be enabled to return full trace for exceptions.
-
-To enable plugin debugging in _munin-run_ use the _--pidebug_ option. 
 
 
 Collaboration
@@ -157,3 +138,35 @@ receive improvements, and many more Multigraph plugins will be developed
 collaboratively.
 
 I would be glad to receive some sample graphs from anyone using the plugins.
+
+
+Credits
+-------
+
+_PyMunin_ has been developed 
+by [aouyar](https://github.com/aouyar) (Ali Onur Uyar).
+
+Some of the people that have knowingly or unknowingly contributed with the 
+development are:
+
+* Initial packaging of the code was done by Mark Lavin
+([mlavin](https://github.com/mlavin)).
+PyMunin is installable pip / easy_install thanks to Mark. :-)
+* _PyMunin_ has been packaged for _Fedora_ and _Red Hat Enterprise Linux_ by 
+  [Matthias Runge](www.matthias-runge.de).
+* The initial design of the solution was inspired by 
+[python-munin](https://github.com/samuel/python-munin) 
+by [Samuel Stauffer](https://github.com/samuel).
+* The Rackspace Cloud plugin was initially developed
+  by [Brian Welsh](https://github.com/palewire).
+* [Santiago Rojo](https://github.com/arpagon) has contributed
+many improvements to the Asterisk Plugin.
+* [Preston Mason](https://github.com/pentie) has made significant contributions to 
+the Varnish Cache and PHP APC Cache Plugins.
+* Many plugins were inspired by existing _Munin Plugins_developed by other 
+  people. (Before developing any plugins, I always try to check existing 
+  solutions.)
+* Many people have contributed by testing the plugins and identifying issues.
+
+I hope that more people will be using PyMunin for developing plugins in the 
+future.
