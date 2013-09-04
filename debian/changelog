@@ -1,5 +1,5 @@
-pymunin (0.9.20~git0) UNRELEASED; urgency=low
+pymunin (0.9.28~git0) UNRELEASED; urgency=low
 
   * Initial packaging
 
- -- Jyrki Muukkonen <jvtm@kruu.org>  Fri, 19 Oct 2012 21:37:49 +0300
+ -- Jyrki Muukkonen <jvtm@kruu.org>  Wed, 04 Sep 2013 16:28:06 +0300
